@@ -1,11 +1,15 @@
 package patientflowmonitoring
 
+
 class Patient {
 
 	String patientID
 	PatientState currentState
 	Event lastEventReceived
 	String roomID
+	String procedureStatus = ""
+	int pendingOrders=0
+	int ordersProcessed=0
 	Map props = [:]
 	List states = []
 	List events = []
@@ -34,6 +38,8 @@ class Patient {
 	
 	void startCurrentState(Date ts){
 	  currentState?.setStartTime(ts);
+	  currentState?.setDuration();
+	  
 	}
 	
 	void changeState(PatientState newState, Date ts){
@@ -46,6 +52,10 @@ class Patient {
 	  currentState = newState;
 	  states.add(currentState);
 	  startCurrentState(ts);
+	}
+	
+	public PatientState getCurrentState(){
+		return currentState;
 	}
 	
 	public void appendEvent(Event event){

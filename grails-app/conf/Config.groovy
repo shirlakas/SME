@@ -57,10 +57,10 @@ environments {
         grails.serverURL = "http://www.changeme.com"
     }
     development {
-        grails.serverURL = "http://localhost:8080/${appName}"
+        grails.serverURL = "http://SME/${appName}"
     }
     test {
-        grails.serverURL = "http://localhost:8080/${appName}"
+        grails.serverURL = "http://SME/${appName}"
     }
 
 }
@@ -72,12 +72,12 @@ log4j = {
     //
     appenders {
         console name:'stdout', layout:pattern(conversionPattern: '%c{2} %m%n')
-        rollingFile name:'PFM_Appender',maxFileSize:1024,file:'/tmp/pfm.log'
+        rollingFile name:'SME_Appender',maxFileSize:1024,file:'/tmp/sme.log'
         
     }
 	
 	root {
-		info 'stdout', 'PFM_Appender'
+		info 'stdout', 'SME_Appender'
 	}
 
     error  'org.codehaus.groovy.grails.web.servlet',  //  controllers
@@ -97,3 +97,25 @@ log4j = {
 	
 	info	'grails.app'
 }
+
+//cxf configuration
+
+cxf {
+	installDir ="apache-cxf-2.4.6"
+	
+	client {
+		sendClient{
+						
+			/* PFM Server WSDL  */
+			clientInterface = patientflowmonitoring.PFMServerService
+			//namespace = "osler.eecs.uottawa.ca/PFM/"
+			wsdl = "web-app/PFMServer.wsdl"
+			
+			/* Message broker version 8 */
+			serviceEndpointAddress= "http://137.122.88.139:7080/soap/registerEvent-pfm" //using pfm format
+			//serviceEndpointAddress ="http://137.122.88.139:7080/soap/registerEvent-tws"  //using lombardi's format
+			}
+			
+	}
+}
+

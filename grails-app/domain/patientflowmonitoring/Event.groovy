@@ -1,31 +1,69 @@
 package patientflowmonitoring
 
+import java.util.Date;
+import java.util.Map;
+
 class Event {
 	
 	enum EventName{
 		Triage,
 		Registered,
-		WaitForConsultation,
-		WaitForConsultationCompleted,
-		ConsultationStarted,
-		ConsultationCompleted,
+		PatientInED,
+		PatientOutED,
+		PatientInCW,
+		PatientOutCW,
+		PatientInCCL,
+		PatientOutCCL,
+		PhysicianInCW,
+		PhysicianOutCW,
+		PhysicianInED,
+		PhysicianOutED,
+		TransportInED,
+		TransportOutED,
+		TransportInCW,
+		TransportOutCW,
+		TransportInCCL,
+		TransportOutCCL,
+		WaitForConsultation1,
+		ConsultationStarted1,
+		ConsultationCompleted1,
+		ConsultationStarted2,
+		ConsultationCompleted2,
 		OrderRequest,
 		WaitForOrderExecution,
 		OrderRequestCompleted,
-		OrderExecutionCompleted,
 		WaitForConsultation2,
 		BedRequest,
 		PatientAdmittedWithNoBed,
 		PatientAdmittedWithBed,
 		WaitForBed,
-		WaitForBedCompleted,
 		PatientTransportRequest,
 		WaitForTransport,
-		WaitForTransportCompleted,
 		PatientTransportStarted,
-		PatientTransportCompleted,
 		PatientArrivedInBed,
-		Discharge
+		
+		
+		// new events for extended scenario
+		OrdersExecutionCompleted,
+		RequestReferral,
+		ConsultationStarted3,
+		ConsultationCompleted3,
+		ProcedureRequest,
+		ProceduresScheduled,
+		WaitForProcedures,
+		ProcedureStarted,
+		ProcedureCompleted,
+		ProcedureUpdated,
+		ProceduresExecutionCompleted,
+		DischargeRequest,
+		WaitForDischarge,
+		DischargeCompleted,
+		//BedCleanUpRequest,
+		//WaitForBedCleanUp,
+		//BedCleanUpStarted,
+		//BedCleanUpCompleted
+		
+		
 	}
 	
 	EventName eventName
