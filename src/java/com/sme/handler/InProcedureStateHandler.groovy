@@ -11,33 +11,47 @@ import patientflowmonitoring.Room;
 import patientflowmonitoring.RoomState;
 import patientflowmonitoring.RoomState.RoomStateName;
 
+import dbagent.QueryBuilder
 import java.util.Map;
+
 
 class InProcedureStateHandler extends EventHandler{
 	@Override
-	public Object process(Map props) {
+	def process(Map props){
 		/* This Event Handler is called for patients
-		 * in the IN_BED_CCL state
-		 * If the event received is ProcedureStated
-		 * change the Patient state to IN_PROCEDURE
+		 * in the IN_PROCEDURE ANGIOGRAM or IN_PROCEDURE_PCI state
+		 * If the event received is ProcedureCompleted
+		 * change the Patient state to IN_BED_CCL
 		 */
-		String evnt = props['event']
+		evnt = props['event']
+		
+		unitId='CCL'
+		locationId=patient.getRoomID()
+		timestamp = props['timestamp']
+		providerId=props['Provider_ID']
+		
+		startTimestamp= timestamp.substring(0, 10)+' '+timestamp.substring(11, 13)+':'+timestamp.substring(14, 16)+':'+timestamp.substring(17, 19)
+		log.info("timestamp is " + startTimestamp)
 		
 		if(evnt == 'ProcedureCompleted'){
 			event.eventName = EventName.ProcedureCompleted
+			patient.procedureStatus = "Completed"
 			log.info(patientId + " arrived at InProcedureStateHandler") // for logging purpose only
-		 
-		 
-			def procedureType = props['Procedure_Type']
-			log.info( "procedure type is " + procedureType );
+			
+			String[] data=[patientId,evnt,providerId, CTAS, locationId,orderNum,orderType,procedureId,startTimestamp,startTimestamp,duration,currentStateFlag,endTimestamp]
+			QueryBuilder qb=new QueryBuilder();
+			int i=qb.buildQueryPatientEventFact(data);
 		 
 			def patientState = new PatientState()
-			patientState.stateAttributes.put ('ProviderId', props['Provider_ID'])
-			patientState.stateAttributes.put ('ProcedureType', props['Procedure_Type'])
-		 
 			patientState.stateName = PatientStateName.IN_BED_CCL
-			
 			updatePatientState(patientState)
+			
+			patientStateId='IN_BED_CCL'
+			data=[patientId,patientStateId,providerId,procedureId,locationId,startTimestamp,startTimestamp,endTimestamp,duration,currentStateFlag]
+			//Calling DAO for Patient State
+			//patientNum, stateName, providerNum, procedureName, roomNum, startTimestamp, date, endTimestamp, duration, currentStateFlag)
+				QueryBuilder qb2=new QueryBuilder();
+				int iii=qb2.buildQueryPatientStateFact(data);
 			
 			return null;
 		}

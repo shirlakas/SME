@@ -39,6 +39,9 @@ beans = {
 	bedincleanupstateHandler(com.sme.handler.BedInCleanUpStateHandler){}
 	bedavailablestateHandler(com.sme.handler.BedAvailableStateHandler){}
 	
+	//
+	
+	
 	//Event Handlers
 	/*triagescoreHandler(com.sme.handler.TriageScoreHandler){}
 	patientregisteredHandler(com.sme.handler.PatientRegisteredHandler){}

@@ -1843,7 +1843,7 @@
   </wsdl:binding>
   <wsdl:service name="PFMServerServiceService">
     <wsdl:port binding="tns:PFMServerServiceServiceSoapBinding" name="PFMServerServicePort">
-      <soap:address location="http://localhost:8080/PFM/services/PFMServer"/>
+      <soap:address location="http://localhost:8080/SME/services/SMEReceiveService"/>
     </wsdl:port>
   </wsdl:service>
 </wsdl:definitions>

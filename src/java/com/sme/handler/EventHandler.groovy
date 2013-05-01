@@ -13,7 +13,8 @@ import patientflowmonitoring.Event.EventName;
 import patientflowmonitoring.BEvent;
 import patientflowmonitoring.BEvent.BEventName;
 
-abstract class EventHandler {
+
+ abstract class EventHandler {
 	
 	static final log = LogFactory.getLog(this)
 	
@@ -23,51 +24,63 @@ abstract class EventHandler {
 	def Room room
 	String patientId
 	String physicianId
-	String transportId
 	String houseKeepingId
 	String roomId
 	String eventn
 	
+	//String patientId
+	String locationId
+	String timestamp
+	String evnt
+	String providerId='Not Defined Num'
+	String procedureId='Not defined Name'
+	String CTAS=null
+	String orderNum=null
+	String orderType=null
+	String unitId=null
+	String dateVar=null
+	String startTimestamp=null
+	String endTimestamp=null
+	String duration=null
+	String currentStateFlag='1'
+	String patientStateId=null
+	String roomStateId=null
+	
 	def void handle(Map props){
-
 		pre_process(props)
 		process(props)
 		post_process()
-		
 		}
 	
 	def void pre_process(props){
 		patientId = props['Patient_ID']
 		physicianId = props['Physician_ID']
-		transportId = props['Transport_ID']
 		roomId = props['Location_ID']
 		eventn =props['event']
 		log.info("~~~Event received is ${props}~~~")
-		log.info("Patient ID is ${patientId}")
 		// if patientId is not null then find the patient else do nothing.
 		//if bedId is not null then find the bed
 		if (patientId){
-			log.info("~~~Creating New Event~~~")
-			event = new Event()
-			event.eventAttrs = props
-			event.timeStamp = createTimeStamp(props['timestamp'])
 			patient = Patient.findByPatientID(patientId)
 			if (!patient){
 				patient = new Patient(patientID:patientId)
 				log.info("~~~Patient Doesn't Exist creating new Patient~~~")
 				patient.save()
+			}
 		}
-			//patient.save()
+		else if(physicianId){
+			patient = Patient.findByRoomID(roomId)
+			
 		}
-		//if physicianId is not null then use find the patient same room
-		if ((physicianId)||(transportId)){
+		if(patient){
+			log.info("~~~Creating New Event~~~")
 			event = new Event()
 			event.eventAttrs = props
 			event.timeStamp = createTimeStamp(props['timestamp'])
-			patient = Patient.findByRoomID(roomId)
 		}
+		
 		//if bedId is not null then find the bed
-		if(((roomId)&&(!patientId)&&(!physicianId)&&(!transportId))||(eventn=='PatientAdmittedWithBed')||(houseKeepingId)){
+		if(((roomId)&&(!patientId)&&(!physicianId))||(eventn=='PatientAdmittedWithBed')||(houseKeepingId)){
 			event1=new BEvent()
 			event1.eventAttrs = props
 			event1.timeStamp = createTimeStamp(props['timestamp'])
@@ -81,25 +94,22 @@ abstract class EventHandler {
 				room.save()
 			}
 		}
-		
 	}
 	
 	def void post_process(){
-		if((patientId)||(physicianId)||(transportId)){
+		if((patientId)||(physicianId)){
 			if(event.eventName != null){
 			patient.appendEvent(event)
 			patient.save()
 			log.info("~~~event ${event.eventName} is processed~~~")
 			}
-			
 		}
-		if(((roomId)&&(!patientId)&&(!physicianId)&&(!transportId))||(houseKeepingId)||(eventn=='PatientAdmittedWithBed')){
+		if(((roomId)&&(!patientId)&&(!physicianId))||(houseKeepingId)||(eventn=='PatientAdmittedWithBed')){
 			if (event1.eventName != null){
 				room.appendEvent(event1)
 				room.save()
 				log.info("~~~Post process Bed event ${event1.eventName} is processed~~~")
 			}
-			
 		}
 	}
 	

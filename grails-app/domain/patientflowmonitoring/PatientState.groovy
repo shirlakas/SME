@@ -11,12 +11,15 @@ class PatientState {
 		TRIAGED,
 		WAIT_FOR_CONSULTATION1,
 		WAIT_FOR_CONSULTATION2,
+		WAIT_FOR_PHYS_INIT_ASSESS,
+		WAIT_FOR_PHYS_RE_ASSESS,
+		IN_PHYS_INIT_ASSESS,
+		IN_PHYS_RE_ASSESS,
 		IN_CONSULTATION1,
 		IN_CONSULTATION2,
 		IN_BED_ED,
 		WAIT_FOR_ORDERS_EXECUTION,
 		WAIT_FOR_ORDER_EXECUTION,
-		ORDER_EXECUTION,
 		ORDER_EXECUTION_COMPLETE,
 		WAIT_FOR_BED_CW,
 		WAIT_FOR_TRANSPORT_CW,
@@ -62,17 +65,12 @@ class PatientState {
 	def void setEndTime(Date ts){
 		endTime = ts
 		if (startTime!=null&&endTime!=null){
-			duration = TimeCategory.minus(endTime,startTime).toMilliseconds()/60000 +1
-		}
+			def diff = TimeCategory.minus(endTime,startTime).toMilliseconds()
+			duration = Math.ceil(diff/60000);
+			}
 		
 	}
-	def void setDuration(){
-		if(startTime != null){
-			def now = new Date()
-			duration=TimeCategory.minus(now,startTime).toMilliseconds()/60000 + 1;
-		}
-	}
-	
+		
 	
 	String toString() {"${this.stateName}"}
 }

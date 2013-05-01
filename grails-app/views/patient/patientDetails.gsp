@@ -10,7 +10,20 @@
 @import "<%=request.getContextPath() %>/css/demo_table.css";
 @import "<%=request.getContextPath() %>/css/jQuery_menu.css";
 </style>
+<script type="text/javascript" language="javascript"
+	src="<%=request.getContextPath() %>/js/jquery.js"></script>
+	<script type="text/javascript" language="javascript">
 
+	/*function to receive a dateString manually match it to a regular expression
+	 split it and parse it as a date. This is to prevent issues with the different
+	 date formats not being supported by different browsers
+	*/
+	var parseDate = function(s) {
+		  var re = /^(\d{4})-(\d\d)-(\d\d) (\d\d):(\d\d):(\d\d)$/;
+		  var m = re.exec(s);
+		  return m ? new Date(m[1], m[2]-1, m[3], m[4], m[5], m[6]) : null;
+		};
+	</script>
 
 <script type="text/javascript" language="javascript"
 	src="<%=request.getContextPath() %>/js/jquery.js"></script>
@@ -85,10 +98,27 @@
 							 },
 						{ "sTitle": "Duration (mins)", "sClass": "center","sWidth":"5%",
 							"fnRender":function(oObj){
-									if ((oObj.aData[3]=="N/A")||(oObj.aData[3]==0)||(oObj.aData[3]=="null"))
-										return 'N/A';
-									return oObj.aData[3];
-								}
+								//if the endTime is not available compute the duration using current time
+								
+								if ((oObj.aData[2]=="N/A")||(oObj.aData[2]=="null")||(oObj.aData[2]==null)){
+										var stString = oObj.aData[1];
+										var len =stString.length;
+										stString = stString.substring(0,len-2);
+										var st = parseDate(stString);
+																					
+										var currentDate = new Date();
+										var diff = currentDate.getTime()-st.getTime();
+										diff = Math.ceil(diff/60000);
+										if (diff<0) {
+											diff = 0;
+										}
+										return diff;
+									}
+								if (oObj.aData[3]<0){
+										return 0;
+									}
+								return oObj.aData[3];
+							}
 							 },
 							 { "sTitle": "Target (mins)", "sClass": "center","sWidth":"5%",
 									"fnRender":function(oObj){
@@ -105,22 +135,29 @@
                 // and colour the values for duration depending on the target value 
                 // 
                 $(".state tr:not(:first)").each(function() { 
+                	 
+                    var duration = new Number;
+                    var target = new Number;
+                    var threshold = new Number;
                     
-                    //get the value of the table cell located
-                    //in the third column of the current row
-                    var duration = $(this).find("td:nth-child(4)").html();
-                    var target = $(this).find("td:nth-child(5)").html();
+                    /* get the value of the table cell located in the fourth column of the 
+                     * current row convert all values to floats first before comparing */
                     
-                    //check if target is null
+                    duration = $(this).find("td:nth-child(4)").text();
+                    duration = parseFloat(duration);
+                    target = $(this).find("td:nth-child(5)").text();
+                    target = parseFloat(target);
+                    threshold = parseFloat(target*2.0/3.0);
+                   //check if target is null
                     if (target == 'N/A'){
 	                    }
-                    else if (duration < 2.0/3.0*target){
-                        //change the color of the text to green if duration is less than 2/3 of target
-                       // $(this).find("td:nth-child(4)").css("color", "#00FF00");
-                       //change the background color to green if duration is less than 2/3 of target
-                    	$(this).find("td").css("background-color", "#00FF00");	
+                   else if(duration >= target){
+                        //change the color of the text to red if duration is more than target
+                       // $(this).find("td:nth-child(4)").css("color", "#FF0000"); 
+                       //change the background colour to red if duration is more than target
+                        $(this).find("td").css("background-color", "#FF0000"); 
                     }
-                    else if ((duration >=(2.0/3.0*target))&&(duration <= target)){
+                   else if (duration >= threshold){
                         //change the background color to yellow if duration is more than 2/3 of target
                         // but less than target
                         $(this).find("td").css("background-color", "#F4FA58");
@@ -128,15 +165,15 @@
                         // but less than target
                        // $(this).find("td:nth-child(4)").css("color", "#FACC2E");
                     }
-                    else if(duration > target){
-                        //change the color of the text to red if duration is more than target
-                       // $(this).find("td:nth-child(4)").css("color", "#FF0000"); 
-                       //change the background colour to red if duration is more than target
-                        $(this).find("td").css("background-color", "#FF0000"); 
-                    }
+                    else if (duration < target){
+                        //change the color of the text to green if duration is less than 2/3 of target
+                       // $(this).find("td:nth-child(4)").css("color", "#00FF00");
+                       //change the background color to green if duration is less than 2/3 of target
+                    	$(this).find("td").css("background-color", "#00FF00");	
+                    }   
+                   
                 });
 			
-
 				$('#menutab').tabify();
 			} );
 		</script>
@@ -178,7 +215,7 @@
 
 		<div id="clinicalInfo">
 			<h1>Patient States</h1>
-			<div id="states"></div>
+			<div id="states" class = "state"></div>
 			<h1>Overall Duration: <g:formatNum number="${totalhrs}" format="### hours"/> <g:formatNum number="${totalmins}" format="### mins"/></h1>			
 		</div>
 				

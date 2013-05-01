@@ -1,8 +1,8 @@
 dataSource {
 	pooled = false
 	driverClassName = "com.mysql.jdbc.Driver"
-	//username = "sme"
-	//password = "sme"
+	//username = "pfm"
+	//password = "pfm"
 	username = "shirley"
 	password = ""
 	//username = "root"

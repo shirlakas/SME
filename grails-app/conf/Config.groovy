@@ -1,14 +1,13 @@
 // locations to search for config files that get merged into the main config
-// config files can either be Java properties files or ConfigSlurper scripts
+// config files can either be Java properties files or ConfigSlurper script
+ /*grails.config.locations = [ "classpath:${appName}-config.properties",
+                             "classpath:${appName}-config.groovy",
+                           "file:${userHome}/.grails/${appName}-config.properties",
+                             "file:${userHome}/.grails/${appName}-config.groovy"]
 
-// grails.config.locations = [ "classpath:${appName}-config.properties",
-//                             "classpath:${appName}-config.groovy",
-//                             "file:${userHome}/.grails/${appName}-config.properties",
-//                             "file:${userHome}/.grails/${appName}-config.groovy"]
-
-// if(System.properties["${appName}.config.location"]) {
-//    grails.config.locations << "file:" + System.properties["${appName}.config.location"]
-// }
+ if(System.properties["${appName}.config.location"]) {
+    grails.config.locations << "file:" + System.properties["${appName}.config.location"]
+ }*/
 
 grails.project.groupId = appName // change this to alter the default package name and Maven publishing destination
 grails.mime.file.extensions = true // enables the parsing of file extensions from URLs into the request format
@@ -54,13 +53,13 @@ grails.exceptionresolver.params.exclude = ['password']
 // set per-environment serverURL stem for creating absolute links
 environments {
     production {
-        grails.serverURL = "http://www.changeme.com"
+        grails.serverURL = "http://localhost:8080/${appName}"
     }
     development {
-        grails.serverURL = "http://SME/${appName}"
+        grails.serverURL = "http://localhost:8080/${appName}"
     }
     test {
-        grails.serverURL = "http://SME/${appName}"
+        grails.serverURL = "http://localhost:8080/${appName}"
     }
 
 }
@@ -93,6 +92,7 @@ log4j = {
            'net.sf.ehcache.hibernate',
 		   'org.hibernate.SQL'
 
+	debug  'org.apache.cxf'
     warn   'org.mortbay.log'
 	
 	info	'grails.app'
@@ -107,12 +107,16 @@ cxf {
 		sendClient{
 						
 			/* PFM Server WSDL  */
-			clientInterface = patientflowmonitoring.PFMServerService
-			//namespace = "osler.eecs.uottawa.ca/PFM/"
 			wsdl = "web-app/PFMServer.wsdl"
-			
+			//wsdl = "http://oslerbpm.site.uottawa.ca:9080/teamworks/webservices/OPPOD/WFMCoordinationEventService.tws?WSDL"
+			outputDir="src/java"
+			allowChunking = false
+			client=true
+			clientInterface = patientflowmonitoring.PFMServerService
+						
 			/* Message broker version 8 */
 			serviceEndpointAddress= "http://137.122.88.139:7080/soap/registerEvent-pfm" //using pfm format
+			
 			//serviceEndpointAddress ="http://137.122.88.139:7080/soap/registerEvent-tws"  //using lombardi's format
 			}
 			

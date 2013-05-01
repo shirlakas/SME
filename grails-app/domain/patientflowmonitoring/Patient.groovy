@@ -38,7 +38,6 @@ class Patient {
 	
 	void startCurrentState(Date ts){
 	  currentState?.setStartTime(ts);
-	  currentState?.setDuration();
 	  
 	}
 	
@@ -58,15 +57,18 @@ class Patient {
 		return currentState;
 	}
 	
+	/*public int getPendingOrders(){
+		return pendingOrders;
+	}*/
+	
+	/*public int getOrdersProcessed(){
+		return ordersProcessed;
+	}*/
+	
 	public void appendEvent(Event event){
 	  events.add(event)
 	  lastEventReceived  = event
 	}
-	
-//	public void appendState(PatientState newState){
-//		states.add(newState)
-//		currentState = newState
-//	}
 	
 	String toString() {"${this.patientID}"}
 }
